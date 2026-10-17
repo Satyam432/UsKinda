@@ -1,0 +1,10 @@
+import { useEffect, useRef, useState } from 'react'
+import { Heart, RotateCw } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { story } from '../config/story'
+import { PrimaryButton } from '../components/PrimaryButton'
+
+export function Debugging({onNext,onSecret}:{onNext:()=>void,onSecret:(s:string)=>void}) {const [phase,setPhase]=useState<'idle'|'scan'|'done'>('idle');const timers=useRef<number[]>([]);const run=()=>{timers.current.forEach(clearTimeout);setPhase('scan');timers.current=[window.setTimeout(()=>setPhase('done'),2400)]};useEffect(()=>()=>timers.current.forEach(clearTimeout),[]);return <section className="debug scene"><span className="eyebrow">Case file 03 / 06</span><h1>{story.chapterTitles[3]}</h1>
+  <div className="terminal"><div className="terminal-bar"><i/><i/><i/><span>feelings-debugger.exe</span><button aria-label="A tiny terminal heart" onClick={()=>onSecret('Unexpectedly wholesome input detected.')}><Heart/></button></div><div className="terminal-body">{story.chapterText.terminal.map((l,i)=><motion.p key={l} initial={{opacity:0}} animate={{opacity:1}} transition={{delay:i*.12}} className={l.includes('CRITICAL')?'critical':l.includes('WARN')?'warn':''}>{l}</motion.p>)}</div></div>
+  <p>Naturally, as an engineer, I tried to debug this.</p>{phase==='idle'&&<PrimaryButton onClick={run}>Attempt to Fix Bug 🛠️</PrimaryButton>}{phase==='scan'&&<div className="scanner"><i/><p>Scanning... Analyzing... Searching for root cause...</p></div>}{phase==='done'&&<motion.div className="debug-result" initial={{opacity:0,scale:.96}} animate={{opacity:1,scale:1}}><p>Root cause found.</p><h2>Apparently, it’s you{story.recipientName?`, ${story.recipientName}`:''}.</h2><div className="status">Status: <b>Won’t Fix.</b><br/>Reason: This bug is now my favorite feature. ❤️</div><div className="choice-row"><button className="text-btn" onClick={run}><RotateCw/> Replay debug</button><PrimaryButton onClick={onNext}>Accept feature →</PrimaryButton></div></motion.div>}
+  </section>}

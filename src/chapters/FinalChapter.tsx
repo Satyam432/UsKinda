@@ -1,0 +1,14 @@
+import { useState } from 'react'
+import { motion } from 'framer-motion'
+import { BookOpen, Mail, Plane, Phone } from 'lucide-react'
+import { story } from '../config/story'
+import { PrimaryButton } from '../components/PrimaryButton'
+
+export function FinalChapter({onReplay,onCredits}:{onReplay:()=>void,onCredits:()=>void}) {const [open,setOpen]=useState(false);const [choice,setChoice]=useState<'adventure'|'calls'|null>(null);const [secret,setSecret]=useState(false);return <section className="final scene"><span className="eyebrow">Final case file</span><h1>{story.chapterTitles[8]}</h1>
+  {!open?<div className="closed-book"><div><span>Our little story</span><b>✦</b></div><PrimaryButton onClick={()=>setOpen(true)}>Open Our Next Chapter 📖</PrimaryButton></div>:<motion.div initial={{opacity:0,rotateX:16}} animate={{opacity:1,rotateX:0}} className="storybook"><div className="page left"><BookOpen/><span>Chapter:</span><h2>To Be<br/>Continued...</h2></div><div className="page right">{story.finalMessage.map(x=><p key={x}>{x}</p>)}<small>Made with a ridiculous number of lines of code, a little overthinking, and a lot of smiles.</small><em>{story.finalPostscript}</em><strong>{story.endingSignature}</strong></div></motion.div>}
+  {open&&!choice&&<div className="choice-row final-choices"><PrimaryButton onClick={()=>setChoice('adventure')}>More Adventures ✨</PrimaryButton><PrimaryButton onClick={()=>setChoice('calls')}>More Late-Night Calls 🌙</PrimaryButton></div>}
+  {choice&&<motion.div className="ending" initial={{opacity:0}} animate={{opacity:1}}>{choice==='adventure'?<motion.div className="choice-animation" animate={{x:[-100,100],y:[15,-20]}} transition={{duration:1.5}}><Plane/></motion.div>:<motion.div className="choice-animation" animate={{rotate:[-10,10,-10,10,0]}}><Phone/></motion.div>}<p>{choice==='adventure'?"Excellent. I’ll start preparing our highly unorganized adventure plan.":"Perfect. I’ll continue pretending that ‘five more minutes’ means five minutes."}</p><h2>Whatever happens next, I’m really glad we met{story.recipientName?`, ${story.recipientName}`:''}.</h2><div className="star-burst" aria-hidden>{Array.from({length:12},(_,i)=><i key={i} style={{'--r':`${i*30}deg`} as React.CSSProperties}>✦</i>)}</div><PrimaryButton onClick={onReplay}>Replay Our Little Story</PrimaryButton></motion.div>}
+  {choice&&!secret&&<button className="secret-ending-link" onClick={()=>setSecret(true)}>One last secret?</button>}
+  {secret&&<motion.aside className="secret-envelope" initial={{opacity:0,y:18,rotate:-1}} animate={{opacity:1,y:0,rotate:0}} aria-live="polite"><Mail aria-hidden/><span>For {story.recipientName||'you'}</span>{story.finalSecret.map(line=><p key={line}>{line}</p>)}<b aria-label="with love">♡</b></motion.aside>}
+  {choice&&<button className="credits-link" onClick={onCredits}>Credits, because apparently this is a film</button>}
+  </section>}
